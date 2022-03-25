@@ -24,11 +24,12 @@ jobs:
 
     - name: 'Resolve Project Dependencies Using Dotnet'
       shell: pwsh
-      run: pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-        dotnet build --configuration Release --output ./output
+      run: pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}' &&
+        dotnet build --configuration Release --output ./output &&
         popd
 
     - name: Test with the dotnet CLI
+      shell: pwsh
       run: dotnet test --no-build
 
     - name: 'Run Azure Functions Action'
