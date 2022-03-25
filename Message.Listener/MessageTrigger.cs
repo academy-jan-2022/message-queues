@@ -12,10 +12,10 @@ public static class MessageTrigger
     [FunctionName("MessageTrigger")]
     public static async Task RunAsync(
         [QueueTrigger("api", Connection = "StorageConnectionAppSetting")]
-        Message messageText, ILogger log, string id)
+        Message message, ILogger log, string id)
     {
-        string guid = messageText.guid;
-        int number = messageText.Number;
+        string guid = message.guid;
+        int number = message.Number;
         int squaredNumber = number * number;
         UploadFile(squaredNumber, guid);
     }
