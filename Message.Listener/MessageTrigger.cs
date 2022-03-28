@@ -27,7 +27,7 @@ public static class MessageTrigger
         BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
         BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("files");
         
-        string localPath = "./";
+        string localPath = Path.GetTempPath();
         string fileName = $"{guid}" + ".txt";
         string localFilePath = Path.Combine(localPath, fileName);
 
