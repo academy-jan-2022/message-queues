@@ -17,10 +17,10 @@ public static class MessageTrigger
         string guid = message.guid;
         int number = message.Number;
         int squaredNumber = number * number;
-        UploadFile(squaredNumber, guid);
+        await UploadFile(squaredNumber, guid);
     }
     
-    private static void UploadFile(int squaredNumber, string guid)
+    private static async Task UploadFile(int squaredNumber, string guid)
     {
         string connectionString = Environment.GetEnvironmentVariable("StorageConnectionAppSetting");
 
@@ -31,9 +31,9 @@ public static class MessageTrigger
         string fileName = $"{guid}" + ".txt";
         string localFilePath = Path.Combine(localPath, fileName);
 
-        File.WriteAllTextAsync(localFilePath, $"{squaredNumber}");
+        await File.WriteAllTextAsync(localFilePath, $"{squaredNumber}");
 
         BlobClient blobClient = containerClient.GetBlobClient(fileName);
-        blobClient.UploadAsync(localFilePath, true);
+        await blobClient.UploadAsync(localFilePath, true);
     }
 }
