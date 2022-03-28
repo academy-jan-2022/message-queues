@@ -1,6 +1,6 @@
-using System.Threading.Tasks;
 using System;
-using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -12,28 +12,17 @@ public static class MessageTrigger
     [FunctionName("MessageTrigger")]
     public static async Task RunAsync(
         [QueueTrigger("api", Connection = "StorageConnectionAppSetting")]
-        Message message, ILogger log, string id)
-    {
-        string guid = message.guid;
-        int number = message.Number;
-        int squaredNumber = number * number;
-        await UploadFile(squaredNumber, guid);
-    }
-    
-    private static async Task UploadFile(int squaredNumber, string guid)
-    {
-        string connectionString = Environment.GetEnvironmentVariable("StorageConnectionAppSetting");
+        Message message,
+        ILogger log,
+        string id
+    ) =>
+        await UploadFile(message.Number * message.Number, message.guid);
 
-        BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
-        BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("files");
-        
-        string localPath = Path.GetTempPath();
-        string fileName = $"{guid}" + ".txt";
-        string localFilePath = Path.Combine(localPath, fileName);
-
-        await File.WriteAllTextAsync(localFilePath, $"{squaredNumber}");
-
-        BlobClient blobClient = containerClient.GetBlobClient(fileName);
-        await blobClient.UploadAsync(localFilePath, true);
-    }
+    private static Task UploadFile(int squaredNumber, string guid) =>
+        new BlobServiceClient(
+                Environment.GetEnvironmentVariable("StorageConnectionAppSetting")
+            )
+            .GetBlobContainerClient("files")
+            .GetBlobClient($"{guid}" + ".txt")
+            .UploadAsync(new BinaryData(Encoding.UTF8.GetBytes(squaredNumber.ToString())), true);
 }
