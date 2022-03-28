@@ -15,8 +15,11 @@ public static class MessageTrigger
         Message message,
         ILogger log,
         string id
-    ) =>
+    )
+    {
+        if (message.Number % 2 == 1) {log.LogInformation($"{message.Number} is odd");}
         await UploadFile(message.Number * message.Number, message.guid);
+    }
 
     private static Task UploadFile(int squaredNumber, string guid) =>
         new BlobServiceClient(
